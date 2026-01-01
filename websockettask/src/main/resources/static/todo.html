@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Todos</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+<nav style="margin-right:0">
+    <button onclick="goBack()">Back</button>
+</nav>
+
+<center>
+    <h2>Todo List</h2>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Collection ID</th>
+        </tr>
+        <tr>
+            <td id="cidBox"></td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table>
+        <tr>
+            <td>Subject:</td>
+        </tr>
+        <tr>
+            <td><input id="subject"></td>
+        </tr>
+
+        <tr>
+            <td>Description:</td>
+        </tr>
+        <tr>
+            <td><input id="description"></td>
+        </tr>
+
+        <tr>
+            <td><button onclick="createTodo()">Create Todo</button></td>
+        </tr>
+    </table>
+
+    <br><hr><br>
+
+    <table border="1" cellpadding="8">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody id="todos"></tbody>
+    </table>
+</center>
+
+<script>
+    const params=new URLSearchParams(window.location.search);
+    const cid=params.get("cid");
+    document.getElementById("cidBox").innerText=cid;
+
+    let todos=[];
+    let stompClient=null;
+    let subscription=null;
+
+    async function loadTodos() {
+        try {
+            const res = await fetch("http://localhost:8080/todos/"+cid);
+
+            if (!res.ok) {
+                alert("Collection not found");
+                window.location.href="index.html";
+                return;
+            }
+
+            todos = await res.json();
+            renderTodos();
+
+        } catch (e) {
+            alert("Collection not found");
+            window.location.href="index.html";
+        }
+    }
+
+    function renderTodos() {
+        const body=document.getElementById("todos");
+        body.innerHTML="";
+
+        todos.forEach(t=>{
+            const row=`
+                <tr>
+                    <td>${t.todoId}</td>
+                    <td>${t.subject}</td>
+                    <td>${t.description||""}</td>
+                    <td>
+                        <button onclick="showEdit('${t.todoId}')">Edit</button>
+                        <div id="edit-${t.todoId}" style="display:none;">
+                            <input id="edit-sub-${t.todoId}" value="${t.subject}">
+                            <input id="edit-desc-${t.todoId}" value="${t.description||""}">
+                            <button onclick="updateTodo('${t.todoId}')">Save</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button onclick="deleteTodo('${t.todoId}')">Delete</button>
+                    </td>
+                </tr>
+            `;
+            body.innerHTML+=row;
+        });
+    }
+
+    function showEdit(id) {
+        document.getElementById(`edit-${id}`).style.display="block";
+    }
+
+    async function createTodo() {
+        const subject=document.getElementById("subject").value.trim();
+        const description=document.getElementById("description").value.trim();
+
+        await fetch("http://localhost:8080/todos/"+cid,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({subject,description})
+        });
+
+        document.getElementById("subject").value="";
+        document.getElementById("description").value="";
+    }
+
+    async function updateTodo(todoId) {
+        const subject=document.getElementById(`edit-sub-${todoId}`).value;
+        const description=document.getElementById(`edit-desc-${todoId}`).value;
+
+        await fetch(`http://localhost:8080/todos/${cid}/${todoId}`,{
+            method:"PUT",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({subject,description})
+        });
+    }
+
+    async function deleteTodo(todoId) {
+        await fetch(`http://localhost:8080/todos/${cid}/${todoId}`,{
+            method:"DELETE"
+        });
+    }
+
+    function connectWS() {
+        const socket=new SockJS("http://localhost:8080/ws");
+        stompClient=Stomp.over(socket);
+
+        stompClient.connect({},()=>{
+            subscription=stompClient.subscribe("/topic/todos/"+cid,msg=>{
+                const event=JSON.parse(msg.body);
+                applyEvent(event);
+            });
+        });
+    }
+
+    function applyEvent(event) {
+        if(event.event==="CREATED")
+            todos.push(event.data);
+        else if(event.event==="UPDATED")
+            todos=todos.map(t=>t.todoId===event.data.todoId?event.data:t);
+        else if(event.event==="DELETED")
+            todos=todos.filter(t=>t.todoId!==event.data.todoId);
+
+        renderTodos();
+    }
+
+    function cleanupWS() {
+        if(subscription) subscription.unsubscribe();
+        if(stompClient) stompClient.disconnect();
+    }
+
+    function goBack() {
+        cleanupWS();
+        window.location.href="index.html";
+    }
+
+    window.onload=function() {
+        loadTodos();
+        connectWS();
+    };
+
+    window.onbeforeunload=cleanupWS;
+</script>
+
+</body>
+</html>
