@@ -24,7 +24,7 @@ public class Todo {
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "collection_id", nullable = false)
     @JsonBackReference
     @ToString.Exclude

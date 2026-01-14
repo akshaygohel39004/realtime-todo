@@ -22,7 +22,7 @@ public class TodoCollection {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "todoCollection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "todoCollection", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     @JsonManagedReference
     @ToString.Exclude
     private List<Todo> todos;
