@@ -1,15 +1,16 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.DTO.CollectionEvent;
+import com.akshay.websockettask.DTO.Event;
+import com.akshay.websockettask.DTO.EventType;
+import com.akshay.websockettask.DTO.TodoCollectionDto;
 import com.akshay.websockettask.Exceptions.NotFoundException;
 import com.akshay.websockettask.Repository.TodoCollectionRepository;
 import com.akshay.websockettask.entity.TodoCollection;
+import com.akshay.websockettask.mapper.TodoCollectionMapper;
+import com.akshay.websockettask.util.WebSocketEventUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,58 +18,54 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TodoCollectionService {
+
     private final TodoCollectionRepository repository;
-    private final SimpMessagingTemplate template;
-    private static final String TOPIC = "/topic/collections";
+    private final TodoCollectionMapper todoCollectionMapper;
+    private final WebSocketEventUtil webSocketEventUtil;
 
-    private void publishEvent(String type, TodoCollection collection) {
+    private final String TOPIC = "/topic/collections";
 
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-
-            TransactionSynchronizationManager.registerSynchronization(
-                    new TransactionSynchronizationAdapter() {
-                        @Override
-                        public void afterCommit() {
-                            template.convertAndSend(TOPIC, new CollectionEvent(type, collection)
-                            );
-                        }
-                    }
-            );
-        } else {
-            template.convertAndSend(TOPIC, new CollectionEvent(type, collection)
-            );
-        }
+    private void publishEvent(EventType type, TodoCollection collection) {
+        TodoCollectionDto dto = todoCollectionMapper.toDto(collection);
+        webSocketEventUtil.publish(
+                TOPIC,
+                new Event<>(type, dto)
+        );
     }
 
-    public List<TodoCollection> getAll(){
-        return repository.findAll();
+    public List<TodoCollectionDto> getAll() {
+        return todoCollectionMapper.toDtoList(repository.findAll());
     }
 
     @Transactional
-    public TodoCollection create(TodoCollection collection){
-        TodoCollection saved=repository.save(collection);
-        publishEvent("CREATED",saved);
-        return saved;
+    public TodoCollectionDto create(TodoCollectionDto collectionDto) {
+        TodoCollection saved =
+                repository.save(todoCollectionMapper.toEntity(collectionDto));
+
+        publishEvent(EventType.COLLECTION_CREATED, saved);
+        return todoCollectionMapper.toDto(saved);
     }
 
     @Transactional
-    public TodoCollection update(UUID id,TodoCollection updated) throws NotFoundException {
-        TodoCollection alreadyExist=repository.findById(id).orElseThrow(()->{
-            return new NotFoundException("TodoCollection");
-        });
-        alreadyExist.setTitle(updated.getTitle());
-        repository.save(alreadyExist);
-        publishEvent("UPDATED",alreadyExist);
-        return alreadyExist;
+    public TodoCollectionDto update(UUID id, TodoCollectionDto updatedDto) {
+
+        TodoCollection existing = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TodoCollection"));
+
+        existing.setTitle(updatedDto.getTitle());
+        TodoCollection saved = repository.save(existing);
+
+        publishEvent(EventType.COLLECTION_UPDATED, saved);
+        return todoCollectionMapper.toDto(saved);
     }
 
     @Transactional
-    public void delete(UUID id) throws NotFoundException {
-        TodoCollection alreadyExist=repository.findById(id).orElseThrow(()->{
-            return new NotFoundException("TodoCollection");
-        });
-        repository.delete(alreadyExist);
-        publishEvent("DELETED",alreadyExist);
+    public void delete(UUID id) {
+
+        TodoCollection existing = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TodoCollection"));
+
+        repository.delete(existing);
+        publishEvent(EventType.COLLECTION_DELETED, existing);
     }
 }
