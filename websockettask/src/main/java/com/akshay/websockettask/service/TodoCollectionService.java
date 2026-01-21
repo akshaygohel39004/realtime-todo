@@ -16,56 +16,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-public class TodoCollectionService {
 
-    private final TodoCollectionRepository repository;
-    private final TodoCollectionMapper todoCollectionMapper;
-    private final WebSocketEventUtil webSocketEventUtil;
+public interface TodoCollectionService {
 
-    private final String TOPIC = "/topic/collections";
-
-    private void publishEvent(EventType type, TodoCollection collection) {
-        TodoCollectionDto dto = todoCollectionMapper.toDto(collection);
-        webSocketEventUtil.publish(
-                TOPIC,
-                new Event<>(type, dto)
-        );
-    }
-
-    public List<TodoCollectionDto> getAll() {
-        return todoCollectionMapper.toDtoList(repository.findAll());
-    }
+    public List<TodoCollectionDto> getAll();
+    @Transactional
+    public TodoCollectionDto create(TodoCollectionDto collectionDto) ;
 
     @Transactional
-    public TodoCollectionDto create(TodoCollectionDto collectionDto) {
-        TodoCollection saved =
-                repository.save(todoCollectionMapper.toEntity(collectionDto));
-
-        publishEvent(EventType.COLLECTION_CREATED, saved);
-        return todoCollectionMapper.toDto(saved);
-    }
-
+    public TodoCollectionDto update(UUID id, TodoCollectionDto updatedDto);
     @Transactional
-    public TodoCollectionDto update(UUID id, TodoCollectionDto updatedDto) {
-
-        TodoCollection existing = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("TodoCollection"));
-
-        existing.setTitle(updatedDto.getTitle());
-        TodoCollection saved = repository.save(existing);
-
-        publishEvent(EventType.COLLECTION_UPDATED, saved);
-        return todoCollectionMapper.toDto(saved);
-    }
-
-    @Transactional
-    public void delete(UUID id) {
-
-        TodoCollection existing = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("TodoCollection"));
-
-        repository.delete(existing);
-        publishEvent(EventType.COLLECTION_DELETED, existing);
-    }
+    public void delete(UUID id) ;
 }
