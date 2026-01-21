@@ -1,7 +1,6 @@
 package com.akshay.websockettask.controller;
 
 import com.akshay.websockettask.DTO.TodoCollectionDto;
-import com.akshay.websockettask.entity.TodoCollection;
 import com.akshay.websockettask.service.TodoCollectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ public class ToDoCollectionController {
 
     @GetMapping
     public ResponseEntity<List<TodoCollectionDto>> getAll() {
+
         return ResponseEntity.ok(service.getAll());
     }
 

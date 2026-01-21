@@ -4,7 +4,7 @@ import com.akshay.websockettask.DTO.Event;
 import com.akshay.websockettask.DTO.EventType;
 import com.akshay.websockettask.DTO.TodoCollectionDto;
 import com.akshay.websockettask.Exceptions.NotFoundException;
-import com.akshay.websockettask.Repository.TodoCollectionRepository;
+import com.akshay.websockettask.repository.TodoCollectionRepository;
 import com.akshay.websockettask.entity.TodoCollection;
 import com.akshay.websockettask.mapper.TodoCollectionMapper;
 import com.akshay.websockettask.util.WebSocketEventUtil;

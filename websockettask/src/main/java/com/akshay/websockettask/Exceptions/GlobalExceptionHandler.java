@@ -3,6 +3,7 @@ package com.akshay.websockettask.Exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -12,24 +13,38 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Map<String, Object>> handleApiException(
+            ApiException ex,
+            HttpServletRequest request) {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(
-            NotFoundException ex,
-            HttpServletRequest request
-    ) {
         return error(
                 ex.getMessage(),
-                HttpStatus.NOT_FOUND,
+                ex.getStatus(),
                 request.getRequestURI()
         );
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneral(
-            Exception ex,
-            HttpServletRequest request
-    ) {
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String,Object>> handleBadCredentials(BadCredentialsException badCredentialsException, HttpServletRequest request){
+        return error(
+                badCredentialsException.getMessage(),
+                HttpStatus.UNAUTHORIZED,
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(OAuthAuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleOAuthAuthenticationException(OAuthAuthenticationException ex, HttpServletRequest request) {
+        return error(
+                ex.getMessage(),
+                ex.getStatus(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler({Exception.class, RuntimeException.class})
+    public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex, HttpServletRequest request) {
         return error(
                 "Something went wrong",
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -37,11 +52,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    private ResponseEntity<Map<String, Object>> error(
-            String message,
-            HttpStatus status,
-            String path
-    ) {
+    private ResponseEntity<Map<String, Object>> error(String message, HttpStatus status, String path) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("isSuccess", false);                   //always be false
         body.put("timestamp", Instant.now());           // ISO-8601 universal time
@@ -49,7 +60,6 @@ public class GlobalExceptionHandler {
         body.put("error", status.getReasonPhrase());    // eg. Not Found
         body.put("message", message);                   // Custom msg
         body.put("path", path);                         // /api/todos/{id}
-
         return ResponseEntity.status(status).body(body);
     }
 }

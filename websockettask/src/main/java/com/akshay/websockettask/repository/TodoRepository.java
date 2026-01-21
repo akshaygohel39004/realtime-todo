@@ -1,4 +1,4 @@
-package com.akshay.websockettask.Repository;
+package com.akshay.websockettask.repository;
 
 import com.akshay.websockettask.entity.Todo;
 import org.springframework.data.jpa.repository.JpaRepository;

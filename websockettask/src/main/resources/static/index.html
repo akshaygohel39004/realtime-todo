@@ -15,7 +15,9 @@
     </script>
 </head>
 <body>
-
+<nav style="margin-right:0">
+    <button onclick="logout()">logout</button>
+</nav>
 <center>
 
     <h2>Todo Collections (Realtime)</h2>
@@ -31,7 +33,6 @@
     <table border="1" cellpadding="8">
         <thead>
         <tr>
-            <th>ID</th>
             <th>Title (Click)</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -149,6 +150,16 @@
     }
 
     window.onbeforeunload = cleanupWS;
+
+    async function logout() {
+        if (stompClient) {
+            stompClient.disconnect();
+        }
+
+
+
+        window.location.href = "logout";
+    }
 
 </script>
 
