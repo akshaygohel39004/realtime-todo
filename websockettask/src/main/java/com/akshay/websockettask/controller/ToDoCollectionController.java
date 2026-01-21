@@ -1,6 +1,6 @@
 package com.akshay.websockettask.controller;
 
-import com.akshay.websockettask.entity.TodoCollection;
+import com.akshay.websockettask.DTO.TodoCollectionDto;
 import com.akshay.websockettask.service.TodoCollectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +20,20 @@ public class ToDoCollectionController {
     private final TodoCollectionService service;
 
     @GetMapping
-    public ResponseEntity<List<TodoCollection>> getAll() {
+    public ResponseEntity<List<TodoCollectionDto>> getAll() {
+
         return ResponseEntity.ok(service.getAll());
     }
 
     @PostMapping
-    public ResponseEntity<TodoCollection> create(@RequestBody TodoCollection collection) {
-        TodoCollection saved = service.create(collection);
+    public ResponseEntity<TodoCollectionDto> create(@RequestBody TodoCollectionDto collectionDto) {
+        TodoCollectionDto saved = service.create(collectionDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TodoCollection> update(@PathVariable UUID id, @RequestBody TodoCollection updated) {
-        TodoCollection saved = service.update(id, updated);
+    public ResponseEntity<TodoCollectionDto> update(@PathVariable UUID id, @RequestBody TodoCollectionDto updatedDto) {
+        TodoCollectionDto saved = service.update(id, updatedDto);
         return ResponseEntity.ok(saved);
     }
 

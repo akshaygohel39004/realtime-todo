@@ -1,104 +1,33 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.DTO.TodoEvent;
+import com.akshay.websockettask.DTO.Event;
+import com.akshay.websockettask.DTO.EventType;
+import com.akshay.websockettask.DTO.TodoDto;
 import com.akshay.websockettask.Exceptions.NotFoundException;
-import com.akshay.websockettask.Repository.TodoCollectionRepository;
-import com.akshay.websockettask.Repository.TodoRepository;
+import com.akshay.websockettask.repository.TodoCollectionRepository;
+import com.akshay.websockettask.repository.TodoRepository;
 import com.akshay.websockettask.entity.Todo;
 import com.akshay.websockettask.entity.TodoCollection;
+import com.akshay.websockettask.mapper.TodoMapper;
+import com.akshay.websockettask.util.WebSocketEventUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-public class TodoService {
-    private final TodoRepository repository;
-    private final TodoCollectionRepository todoCollectionRepository;
-    private  final SimpMessagingTemplate tamplate;
 
-    private final String TOPIC="/topic/todos/";
-    private void broadcast(UUID cid, String event, Todo todo) {
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-
-            TransactionSynchronizationManager.registerSynchronization(
-                    new TransactionSynchronizationAdapter() {
-                        @Override
-                        public void afterCommit() {
-                            tamplate.convertAndSend(
-                                    TOPIC + cid,
-                                    new TodoEvent(event, todo)
-                            );
-                        }
-                    }
-            );
-        } else {
-
-            tamplate.convertAndSend(
-                    TOPIC + cid,
-                    new TodoEvent(event, todo)
-            );
-        }
-    }
+public interface TodoService {
 
 
-    public Iterable<Todo> getTodos(UUID cid){
-        TodoCollection todoCollection = todoCollectionRepository.findById(cid)
-                .orElseThrow(() -> new NotFoundException("Collection"));
-
-        if (todoCollection.getTodos() == null) {
-            throw new NotFoundException("Todos not initialized");
-        }
-
-        return todoCollection.getTodos();
-    }
-
+    public Iterable<TodoDto> getTodos(UUID cid);
 
     @Transactional
-    public Todo create(UUID cid,Todo todo) throws NotFoundException {
-        TodoCollection collection=todoCollectionRepository.findById(cid).orElseThrow(
-                ()->new NotFoundException("Collection")
-        );
-
-        todo.setTodoCollection(collection);
-        Todo saved= repository.save(todo);
-        broadcast(cid,"CREATED",saved);
-        return saved;
-
-    }
+    public TodoDto create(UUID cid, TodoDto todoDto) ;
 
     @Transactional
-    public Todo update(UUID cid,UUID todoId,Todo update) throws NotFoundException {
-        Todo oldTodo= repository.findById(todoId).orElseThrow(
-                ()-> new NotFoundException("todo")
-        );
-
-        oldTodo.setDescription(update.getDescription());
-        oldTodo.setSubject(update.getSubject());
-
-        Todo saved= repository.save(oldTodo);
-
-        broadcast(cid,"UPDATED",saved);
-
-        return saved;
-
-
-    }
+    public TodoDto update(UUID cid, UUID todoId, TodoDto updateDto);
 
     @Transactional
-    public void deleteTodo(UUID cid,UUID todoId) throws NotFoundException {
-        Todo oldTodo= repository.findById(todoId).orElseThrow(
-                ()-> new NotFoundException("todo")
-        );
-
-        repository.delete(oldTodo);
-        broadcast(cid,"DELETED",oldTodo);
-    }
-
+    public void deleteTodo(UUID cid, UUID todoId);
 }
