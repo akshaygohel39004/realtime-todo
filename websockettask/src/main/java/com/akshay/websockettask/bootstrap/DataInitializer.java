@@ -7,6 +7,7 @@ import com.akshay.websockettask.entity.Role;
 import com.akshay.websockettask.entity.RoleTypes;
 import com.akshay.websockettask.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,15 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    @Value("${app.admin.username}")
+    private String adminUsername;
+    @Value("${app.admin.password}")
+    private String adminPassword;
+    @Value("${app.user.username}")
+    private String userUsername;
+    @Value("${app.user.password}")
+    private String userPassword;
     @Override
     public void run(String... args) {
 
@@ -28,8 +38,8 @@ public class DataInitializer implements CommandLineRunner {
         Role adminRole = getOrCreateRole(RoleTypes.ROLE_ADMIN);
 
         //initial two users one is for simple User role and another one is for Admin role
-        createUserIfNotExists("akshay", "akshay", userRole);
-        createUserIfNotExists("admin", "admin", adminRole);
+        createUserIfNotExists(userUsername, userPassword, userRole);
+        createUserIfNotExists(adminUsername, adminPassword, adminRole);
     }
 
     private Role getOrCreateRole(RoleTypes roleType) {
