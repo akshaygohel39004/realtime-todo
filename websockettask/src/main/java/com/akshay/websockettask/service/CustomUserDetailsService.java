@@ -1,6 +1,6 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.entity.AuthProvider;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import com.akshay.websockettask.entity.User;
 import com.akshay.websockettask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user= userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         //if we implement password update mechanism so we need add condition password should null here for through exception
-        if (user.getAuthProvider() != AuthProvider.LOCAL) {
+        if (user.getAuthProvider() != AuthProvider.FORM_LOGIN) {
             throw new BadCredentialsException(
                     "This account uses social login. please sign in with oauth2."
             );

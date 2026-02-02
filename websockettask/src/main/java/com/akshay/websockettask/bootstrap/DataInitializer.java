@@ -1,10 +1,10 @@
 package com.akshay.websockettask.bootstrap;
 
-import com.akshay.websockettask.entity.AuthProvider;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import com.akshay.websockettask.repository.RoleRepository;
 import com.akshay.websockettask.repository.UserRepository;
 import com.akshay.websockettask.entity.Role;
-import com.akshay.websockettask.entity.RoleTypes;
+import com.akshay.websockettask.entity.type.RoleTypes;
 import com.akshay.websockettask.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
                 .username(username)
                 .password(passwordEncoder.encode(rawPassword))
                 .roles(Set.of(role))
-                .authProvider(AuthProvider.LOCAL)
+                .authProvider(AuthProvider.FORM_LOGIN)
                 .build();
 
         userRepository.save(user);

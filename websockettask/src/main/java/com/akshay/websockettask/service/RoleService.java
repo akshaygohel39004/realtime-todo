@@ -1,6 +1,6 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.entity.AuthProvider;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import com.akshay.websockettask.entity.Role;
 import com.akshay.websockettask.security.strategy.role.RoleStrategyFactory;
 import lombok.RequiredArgsConstructor;

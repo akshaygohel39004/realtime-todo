@@ -1,8 +1,6 @@
 package com.akshay.websockettask.security.strategy.username;
 
-import com.akshay.websockettask.entity.AuthProvider;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 

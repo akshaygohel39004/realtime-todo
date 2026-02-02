@@ -9,6 +9,8 @@ import com.akshay.websockettask.Exceptions.InvalidRequestException;
 import com.akshay.websockettask.Exceptions.NotFoundException;
 import com.akshay.websockettask.Exceptions.UserAlreadyExistsException;
 import com.akshay.websockettask.entity.*;
+import com.akshay.websockettask.entity.type.AuthProvider;
+import com.akshay.websockettask.entity.type.RoleTypes;
 import com.akshay.websockettask.mapper.SignupUserMapper;
 import com.akshay.websockettask.repository.RoleRepository;
 import com.akshay.websockettask.repository.UserRepository;
@@ -38,7 +40,7 @@ public class LocalAuthService implements AuthService {
         validateSignupRequest(request);
         ensureUsernameNotExists(request.userName());
         Role userRole = getUserRole();
-        User user = createUser(request, userRole,AuthProvider.LOCAL);
+        User user = createUser(request, userRole, AuthProvider.FORM_LOGIN);
         return new SignupResponse("Signup successful", user.getUsername());
     }
 
