@@ -1,4 +1,4 @@
-package com.akshay.websockettask.DTO.authentication.jwtauth;
+package com.akshay.websockettask.dto.authentication.jwtauth;
 
 
 public record JWTRequest(String userName,String password) { }
