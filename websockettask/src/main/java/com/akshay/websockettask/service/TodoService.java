@@ -1,18 +1,7 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.DTO.Event;
-import com.akshay.websockettask.DTO.EventType;
-import com.akshay.websockettask.DTO.TodoDto;
-import com.akshay.websockettask.Exceptions.NotFoundException;
-import com.akshay.websockettask.repository.TodoCollectionRepository;
-import com.akshay.websockettask.repository.TodoRepository;
-import com.akshay.websockettask.entity.Todo;
-import com.akshay.websockettask.entity.TodoCollection;
-import com.akshay.websockettask.mapper.TodoMapper;
-import com.akshay.websockettask.util.WebSocketEventUtil;
+import com.akshay.websockettask.dto.TodoDto;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package com.akshay.websockettask.event;
 
-import com.akshay.websockettask.DTO.Event;
+import com.akshay.websockettask.dto.Event;
 import lombok.Getter;
 
 @Getter

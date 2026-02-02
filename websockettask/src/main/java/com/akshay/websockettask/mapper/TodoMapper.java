@@ -1,6 +1,6 @@
 package com.akshay.websockettask.mapper;
 
-import com.akshay.websockettask.DTO.TodoDto;
+import com.akshay.websockettask.dto.TodoDto;
 import com.akshay.websockettask.entity.Todo;
 import org.mapstruct.Mapper;
 
