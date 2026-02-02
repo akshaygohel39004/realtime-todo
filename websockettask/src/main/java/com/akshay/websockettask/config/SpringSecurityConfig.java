@@ -11,7 +11,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,10 +25,11 @@ import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 @AllArgsConstructor
 public class SpringSecurityConfig {
 
+
     private JWTAuthFilter jwtAuthFilter;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http,OAuthLoginSuccessHandler oAuthLoginSuccessHandler,OAuthAuthoritiesMapper oAuthAuthoritiesMapper) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http,CustomOAuth2UserService customOAuth2UserService,CustomOidcUserService customOidcUserService) throws Exception {
         http
                 .csrf(csrf->
                         csrf.csrfTokenRequestHandler(csrfTokenRequestHandler())
@@ -51,9 +51,9 @@ public class SpringSecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .oauth2Login(oauth -> oauth //stateless
                         .userInfoEndpoint(userInfo ->
-                                userInfo.userAuthoritiesMapper(oAuthAuthoritiesMapper)
+                                  userInfo.userService(customOAuth2UserService) //for github or other except OAuth2
+                                          .oidcUserService(customOidcUserService) //for OAuth2
                         )
-                        .successHandler(oAuthLoginSuccessHandler)
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
