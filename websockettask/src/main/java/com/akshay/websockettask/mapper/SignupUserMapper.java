@@ -1,7 +1,7 @@
 package com.akshay.websockettask.mapper;
 
 
-import com.akshay.websockettask.DTO.authentication.signup.SignupRequest;
+import com.akshay.websockettask.dto.authentication.signup.SignupRequest;
 import com.akshay.websockettask.entity.AuthProvider;
 import com.akshay.websockettask.entity.Role;
 import com.akshay.websockettask.entity.User;

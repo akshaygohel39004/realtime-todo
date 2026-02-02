@@ -1,9 +1,9 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.DTO.authentication.jwtauth.JWTRequest;
-import com.akshay.websockettask.DTO.authentication.jwtauth.LoginTokens;
-import com.akshay.websockettask.DTO.authentication.signup.SignupRequest;
-import com.akshay.websockettask.DTO.authentication.signup.SignupResponse;
+import com.akshay.websockettask.dto.authentication.jwtauth.JWTRequest;
+import com.akshay.websockettask.dto.authentication.jwtauth.LoginTokens;
+import com.akshay.websockettask.dto.authentication.signup.SignupRequest;
+import com.akshay.websockettask.dto.authentication.signup.SignupResponse;
 
 public interface AuthService {
 

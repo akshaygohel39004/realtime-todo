@@ -1,4 +1,4 @@
-package com.akshay.websockettask.DTO.authentication.oauth2;
+package com.akshay.websockettask.dto.authentication.oauth2;
 
 import com.akshay.websockettask.entity.AuthProvider;
 
