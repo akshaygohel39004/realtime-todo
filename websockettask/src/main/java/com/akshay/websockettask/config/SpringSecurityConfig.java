@@ -48,7 +48,7 @@ public class SpringSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults()) //statefull
-                .httpBasic(Customizer.withDefaults())
+//                .httpBasic(Customizer.withDefaults())
                 .oauth2Login(oauth -> oauth //stateless
                         .userInfoEndpoint(userInfo ->
                                   userInfo.userService(customOAuth2UserService) //for github or other except OAuth2
