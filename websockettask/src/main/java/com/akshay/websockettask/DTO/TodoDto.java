@@ -1,4 +1,4 @@
-package com.akshay.websockettask.DTO;
+package com.akshay.websockettask.dto;
 
 import lombok.Data;
 
