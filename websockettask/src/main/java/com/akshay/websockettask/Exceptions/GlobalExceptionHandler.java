@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -51,6 +52,24 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(err ->
+                        fieldErrors.put(err.getField(), err.getDefaultMessage())
+                );
+
+        return error(
+                fieldErrors.toString(),
+                HttpStatus.BAD_REQUEST,
+                request.getRequestURI()
+        );
+    }
+
 
     private ResponseEntity<Map<String, Object>> error(String message, HttpStatus status, String path) {
         Map<String, Object> body = new LinkedHashMap<>();
