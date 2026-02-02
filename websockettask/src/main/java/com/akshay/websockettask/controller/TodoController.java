@@ -1,6 +1,6 @@
 package com.akshay.websockettask.controller;
 
-import com.akshay.websockettask.DTO.TodoDto;
+import com.akshay.websockettask.dto.TodoDto;
 import com.akshay.websockettask.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.akshay.websockettask.controller;
 
-import com.akshay.websockettask.DTO.TodoCollectionDto;
+import com.akshay.websockettask.dto.TodoCollectionDto;
 import com.akshay.websockettask.service.TodoCollectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

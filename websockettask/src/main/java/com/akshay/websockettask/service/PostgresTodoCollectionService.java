@@ -1,8 +1,8 @@
 package com.akshay.websockettask.service;
 
-import com.akshay.websockettask.DTO.Event;
-import com.akshay.websockettask.DTO.EventType;
-import com.akshay.websockettask.DTO.TodoCollectionDto;
+import com.akshay.websockettask.dto.Event;
+import com.akshay.websockettask.dto.EventType;
+import com.akshay.websockettask.dto.TodoCollectionDto;
 import com.akshay.websockettask.Exceptions.NotFoundException;
 import com.akshay.websockettask.repository.TodoCollectionRepository;
 import com.akshay.websockettask.entity.TodoCollection;

@@ -1,6 +1,6 @@
 package com.akshay.websockettask.util;
 
-import com.akshay.websockettask.DTO.Event;
+import com.akshay.websockettask.dto.Event;
 import com.akshay.websockettask.event.WsInternalEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
