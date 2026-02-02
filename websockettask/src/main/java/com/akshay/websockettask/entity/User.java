@@ -36,7 +36,6 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 20)
     private AuthProvider authProvider;
 
-    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

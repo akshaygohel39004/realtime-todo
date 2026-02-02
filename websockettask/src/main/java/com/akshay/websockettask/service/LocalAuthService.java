@@ -13,6 +13,7 @@ import com.akshay.websockettask.mapper.SignupUserMapper;
 import com.akshay.websockettask.repository.RoleRepository;
 import com.akshay.websockettask.repository.UserRepository;
 import com.akshay.websockettask.util.JWTUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,6 +53,7 @@ public class LocalAuthService implements AuthService {
         return new LoginTokens(accessToken, refreshToken);
     }
 
+    @Transactional
     @Override
     public LoginTokens refresh(String refreshTokenFromCookie) {
         RefreshToken oldToken = refreshTokenService.validate(refreshTokenFromCookie); //validation of token
