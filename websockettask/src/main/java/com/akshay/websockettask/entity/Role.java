@@ -1,5 +1,6 @@
 package com.akshay.websockettask.entity;
 
+import com.akshay.websockettask.entity.type.RoleTypes;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,5 +1,6 @@
 package com.akshay.websockettask.entity;
 
+import com.akshay.websockettask.entity.type.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,6 +37,7 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 20)
     private AuthProvider authProvider;
 
+    @ManyToMany
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

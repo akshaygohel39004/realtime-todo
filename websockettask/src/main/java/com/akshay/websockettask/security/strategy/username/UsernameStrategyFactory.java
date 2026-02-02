@@ -1,7 +1,7 @@
 package com.akshay.websockettask.security.strategy.username;
 
 import com.akshay.websockettask.Exceptions.OAuthAuthenticationException;
-import com.akshay.websockettask.entity.AuthProvider;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,7 @@
 package com.akshay.websockettask.config;
 
 import com.akshay.websockettask.entity.*;
+import com.akshay.websockettask.entity.type.AuthProvider;
 import com.akshay.websockettask.repository.UserRepository;
 import com.akshay.websockettask.security.strategy.role.RoleStrategyFactory;
 import com.akshay.websockettask.security.strategy.username.UsernameStrategyFactory;

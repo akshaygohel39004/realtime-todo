@@ -1,6 +1,6 @@
 package com.akshay.websockettask.repository;
 import com.akshay.websockettask.entity.Role;
-import com.akshay.websockettask.entity.RoleTypes;
+import com.akshay.websockettask.entity.type.RoleTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
