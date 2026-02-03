@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Signup</title>
+
+
+    <script src="js/config.js">
+    </script>
+
+    <script>
+        const API_BASE_URL = APP_CONFIG.API_BASE_URL;
+    </script>
 </head>
+
 <body>
 
 <center>
@@ -35,11 +44,12 @@
 </center>
 
 <script>
+
     async function signup(event) {
         event.preventDefault();
 
-        const userName = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+        const userName = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
         const message = document.getElementById("message");
 
         if (!userName || !password) {
@@ -48,7 +58,7 @@
         }
 
         try {
-            const response = await fetch("http://localhost:5000/auth/signup", {
+            const response = await fetch(API_BASE_URL + "/auth/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -64,10 +74,13 @@
             }
 
             message.innerText = "Signup successful! Go to login.";
+
         } catch (e) {
+            console.error(e);
             message.innerText = "Server error";
         }
     }
+
 </script>
 
 </body>

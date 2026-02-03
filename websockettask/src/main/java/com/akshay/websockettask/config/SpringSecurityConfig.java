@@ -44,7 +44,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/collections/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/collections/**").hasRole("ADMIN")
                         .requestMatchers("/todos/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/ws/**","/auth/**","/signup.html","/csrf").permitAll() // WebSocket handshake,and auth
+                        .requestMatchers("/ws/**","/auth/**","/signup.html","/csrf","/js/config.js").permitAll() // WebSocket handshake,and auth
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults()) //statefull
