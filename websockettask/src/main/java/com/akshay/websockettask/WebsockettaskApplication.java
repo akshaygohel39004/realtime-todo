@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class WebsockettaskApplication {
 	public static void main(String[] args) {
         SpringApplication.run(WebsockettaskApplication.class, args);
-
     }
 
 }
