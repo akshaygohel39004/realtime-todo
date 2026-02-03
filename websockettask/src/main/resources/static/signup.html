@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+
+
+    <script src="js/config.js">
+    </script>
+
+    <script>
+        const API_BASE_URL = APP_CONFIG.API_BASE_URL;
+    </script>
+</head>
+
+<body>
+
+<center>
+    <h2>Signup</h2>
+
+    <form onsubmit="signup(event)">
+        <div>
+            <label>Username:</label><br/>
+            <input type="text" id="username">
+        </div>
+
+        <br/>
+
+        <div>
+            <label>Password:</label><br/>
+            <input type="password" id="password">
+        </div>
+
+        <br/>
+
+        <button type="submit">Signup</button>
+    </form>
+
+    <br/>
+
+    <a href="index.html">Already have an account? Login</a>
+
+    <p id="message"></p>
+</center>
+
+<script>
+
+    async function signup(event) {
+        event.preventDefault();
+
+        const userName = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const message = document.getElementById("message");
+
+        if (!userName || !password) {
+            message.innerText = "Username and password required";
+            return;
+        }
+
+        try {
+            const response = await fetch(API_BASE_URL + "/auth/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userName, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                message.innerText = data.message || "Signup failed";
+                return;
+            }
+
+            message.innerText = "Signup successful! Go to login.";
+
+        } catch (e) {
+            console.error(e);
+            message.innerText = "Server error";
+        }
+    }
+
+</script>
+
+</body>
+</html>
