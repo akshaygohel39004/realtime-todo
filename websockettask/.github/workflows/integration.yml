@@ -25,6 +25,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      #Give permission to mvnw
+      - name: Make mvnw executable
+        run: chmod +x websockettask/mvnw
 
       # Build only (skip tests)
       - name: Build Project
