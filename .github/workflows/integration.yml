@@ -28,4 +28,5 @@ jobs:
 
       # Build only (skip tests)
       - name: Build Project
+        working-directory: websockettask
         run: ./mvnw clean package -DskipTests
