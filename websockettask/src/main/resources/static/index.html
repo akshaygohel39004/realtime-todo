@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo Collections</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        const API_BASE_URL = APP_CONFIG.API_BASE_URL;
+        const WS_BASE_URL = APP_CONFIG.WS_BASE_URL;
+    </script>
+</head>
+<body>
+<nav style="margin-right:0">
+    <button onclick="logout()">logout</button>
+</nav>
+<center>
+
+    <h2>Todo Collections (Realtime)</h2>
+
+    <table>
+        <tr><td>Title:</td></tr>
+        <tr><td><input id="title"></td></tr>
+        <tr><td><button onclick="createCollection()">Create</button></td></tr>
+    </table>
+
+    <br><hr><br>
+
+    <table border="1" cellpadding="8">
+        <thead>
+        <tr>
+            <th>Title (Click)</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+
+        <tbody id="collections"></tbody>
+    </table>
+
+</center>
+
+<script>
+
+    let collections = [];
+    let stompClient = null;
+
+    async function loadInitialCollections() {
+        const res = await fetch(API_BASE_URL + "/collections");
+        collections = await res.json();
+        renderTable();
+    }
+
+
+    function renderTable() {
+        const tableBody = document.getElementById("collections");
+        tableBody.innerHTML = "";
+
+        collections.forEach(c => {
+            let row = `
+                <tr>
+                    <td>
+                        <a href="todo.html?cid=${c.id}">
+                            ${c.title}
+                        </a>
+                    </td>
+                    <td>
+                        <button onclick="showEdit('${c.id}')">Edit</button>
+                        <div id="edit-${c.id}" style="display:none;">
+                            <input id="new-title-${c.id}" value="${c.title}">
+                            <button onclick="updateCollection('${c.id}')">Save</button>
+                        </div>
+                    </td>
+                    <td>
+                        <button onclick="deleteCollection('${c.id}')">Delete</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    const debouncedRender = debounce(renderTable, 200); //for 200 millisecond waiting
+
+    function showEdit(id) {
+        document.getElementById(`edit-${id}`).style.display = "block";
+    }
+
+    async function createCollection() {
+        const title = document.getElementById("title").value.trim();
+        if (!title) { alert("Enter title"); return; }
+
+        await fetch(API_BASE_URL + "/collections", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ title })
+        });
+
+        document.getElementById("title").value = "";
+    }
+
+    async function updateCollection(id) {
+        const title = document.getElementById(`new-title-${id}`).value.trim();
+
+        await fetch(API_BASE_URL + "/collections/" + id, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ title })
+        });
+    }
+
+    async function deleteCollection(id) {
+        await fetch(API_BASE_URL + "/collections/" + id, { method: "DELETE" });
+    }
+
+    function connectWebSocket() {
+        let socket = new SockJS(WS_BASE_URL + "/ws");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, () => {
+            stompClient.subscribe("/topic/collections", msg => {
+                const event = JSON.parse(msg.body);
+                applyRealtime(event);
+            });
+        });
+    }
+
+    function applyRealtime(event) {
+        if (event.event === "COLLECTION_CREATED")
+            collections.push(event.data);
+        else if (event.event === "COLLECTION_UPDATED")
+            collections = collections.map(c => c.id === event.data.id ? event.data : c);
+        else if (event.event === "COLLECTION_DELETED")
+            collections = collections.filter(c => c.id !== event.data.id);
+
+        debouncedRender();
+    }
+
+    window.onload = function () {
+        loadInitialCollections();
+        connectWebSocket();
+    };
+
+    function cleanupWS() {
+        if (stompClient) stompClient.disconnect();
+    }
+
+    window.onbeforeunload = cleanupWS;
+
+    async function logout() {
+        if (stompClient) {
+            stompClient.disconnect();
+        }
+
+
+
+        window.location.href = "logout";
+    }
+
+</script>
+
+</body>
+</html>
